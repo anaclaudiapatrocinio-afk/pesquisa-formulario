@@ -606,21 +606,22 @@
     btn.disabled = true;
     btn.textContent = "Enviando...";
 
-    const data = {
-      "Pergunta 1 — Associação livre": document.getElementById("q1").value,
-      "Pergunta 2A — Opção A": document.getElementById("q2a").value,
-      "Pergunta 2B — Opção B": document.getElementById("q2b").value,
-      "Pergunta 2C — Opção C": document.getElementById("q2c").value,
-      "Pergunta 2D — Opção D": document.getElementById("q2d").value,
-      "Pergunta 3 — Título escolhido": q3selected || "(não selecionado)",
-      "Pergunta 3 — Expectativa": document.getElementById("q3text").value,
-      "Pergunta 4 — Títulos que afastariam": Array.from(document.querySelectorAll('input[name=q4check]:checked')).map(cb => cb.value).join(', ') || '(nenhum)',
-      "Pergunta 4 — Explicação": document.getElementById("q4").value,
-    };
+    constconst payload = {
+    q1: document.getElementById('q1').value,
+    q2a: document.getElementById('q2a').value,
+    q2b: document.getElementById('q2b').value,
+    q2c: document.getElementById('q2c').value,
+    q2d: document.getElementById('q2d').value,
+    q3choice: q3selected,
+    q3text: document.getElementById('q3text').value,
+    q4_options: Array.from(document.querySelectorAll('input[name=q4check]:checked')).map(cb => cb.value).join(', '),
+    q4_text: document.getElementById('q4').value
+};
 
     try {
-      const response = await fetch("https://formspree.io/f/SEU_ID_AQUI", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbxbhdY9weh6sDWGkbBkNgfAEzmQ8DJvmjnJM9j4Qsxr_zds9dn-Ac1Xpi1OhqjHpzfCBg/exec", {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify(data)
       });
