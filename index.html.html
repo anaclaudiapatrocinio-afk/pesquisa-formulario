@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa — Título do Livro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --ink: #1A1A18;
+    --ink-soft: #4A4A42;
+    --accent: #B85C2A;
+    --accent-light: #E8D5C4;
+    --line: #D4C9B8;
+    --card: #FDFAF5;
+    --success: #3A6B4A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* Header */
+  .header {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 48px 40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 320px;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    top: -80px;
+    right: -20px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.7);
+    max-width: 520px;
+  }
+
+  /* Progress */
+  .progress-bar {
+    height: 3px;
+    background: var(--line);
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  /* Container */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Steps */
+  .step {
+    display: none;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .step.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 36px 36px 32px;
+    margin-top: 40px;
+  }
+
+  .question-number {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .question-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+
+  /* Textarea */
+  textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    padding: 16px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 100px;
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 1px;
+  }
+
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: #AAA49A; }
+
+  /* Title options */
+  .title-options { display: flex; flex-direction: column; gap: 12px; }
+
+  .title-option {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    border-radius: 1px;
+  }
+
+  .title-option:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .title-option.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .title-option.selected::after {
+    content: '✓';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .option-letter {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .option-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .option-subtitle {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  /* Response field after option */
+  .option-response {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  .option-response.visible { display: block; }
+
+  .option-response textarea {
+    min-height: 70px;
+    font-size: 13px;
+  }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    cursor: pointer;
+    border: none;
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover { background: #9A4A20; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--ink-soft);
+    color: var(--ink);
+  }
+
+  .step-indicator {
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 1px;
+  }
+
+  /* Thank you screen */
+  .thankyou {
+    text-align: center;
+    padding: 60px 24px;
+  }
+
+  .thankyou-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+  }
+
+  .thankyou h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+
+  .thankyou p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Optional badge */
+  .optional-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 500;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <div class="header-label">Pesquisa de Opinião</div>
+    <h1>Preciso da<br>sua <em>opinião</em></h1>
+    <p>Estou finalizando um livro sobre cultura organizacional e preciso da sua ajuda. São apenas 4 perguntas rápidas — menos de 3 minutos. Não existe resposta certa ou errada.</p>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <div class="question-card">
+      <div class="question-number">Pergunta 01 — 04</div>
+      <div class="question-text">Quando você lê as palavras <strong>CONSERVA CULTURAL</strong>, o que vem à sua cabeça?</div>
+      <div class="question-sub">Escreva a primeira coisa que vier — sem pensar muito.</div>
+      <textarea id="q1" placeholder="Escreva aqui sua resposta espontânea..."></textarea>
+    </div>
+    <div class="nav">
+      <div class="step-indicator">1 de 4</div>
+      <button class="btn btn-primary" onclick="goTo(2)">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="question-card">
+      <div class="question-number">Pergunta 02 — 04</div>
+      <div class="question-text">Que tipo de líder ou gestor você imagina lendo cada um desses títulos?</div>
+      <div class="question-sub">Para cada opção, há um campo para você descrever o leitor que imagina.</div>
+
+      <div class="title-options">
+
+        <div class="title-option" id="opt-a">
+          <div class="option-letter">Opção A</div>
+          <div class="option-title">Conserva Cultural</div>
+          <div class="option-subtitle">Como decifrar e transformar os padrões invisíveis da sua organização</div>
+          <div class="option-response visible">
+            <textarea placeholder="Que tipo de líder você imagina lendo este?" id="q2a"></textarea>
+          </div>
+        </div>
+
+        <div class="title-option" id="opt-b">
+          <div class="option-letter">Opção B</div>
+          <div class="option-title">Conserva Cultural</div>
+          <div class="option-subtitle">O que sua organização preserva sem saber — e como mudar isso</div>
+          <div class="option-response visible">
+            <textarea placeholder="Que tipo de líder você imagina lendo este?" id="q2b"></textarea>
+          </div>
+        </div>
+
+        <div class="title-option" id="opt-c">
+          <div class="option-letter">Opção C</div>
+          <div class="option-title">Conserva Cultural</div>
+          <div class="option-subtitle">Ver o que ninguém questiona é o primeiro passo para transformar</div>
+          <div class="option-response visible">
+            <textarea placeholder="Que tipo de líder você imagina lendo este?" id="q2c"></textarea>
+          </div>
+        </div>
+
+        <div class="title-option" id="opt-d">
+          <div class="option-letter">Opção D</div>
+          <div class="option-title">Conserva Cultural</div>
+          <div class="option-subtitle">Os símbolos que governam sua cultura e as ferramentas para transformá-la</div>
+          <div class="option-response visible">
+            <textarea placeholder="Que tipo de líder você imagina lendo este?" id="q2d"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-secondary" onclick="goTo(1)">← Voltar</button>
+      <div class="step-indicator">2 de 4</div>
+      <button class="btn btn-primary" onclick="goTo(3)">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="question-card">
+      <div class="question-number">Pergunta 03 — 04</div>
+      <div class="question-text">Qual dos quatro títulos você pegaria para folhear numa livraria?</div>
+      <div class="question-sub">Escolha um e nos diga o que esperaria encontrar dentro do livro.</div>
+
+      <div class="title-options" style="margin-bottom: 20px;">
+        <div class="title-option" onclick="selectQ3('A')" id="q3-a">
+          <div class="option-letter">A</div>
+          <div class="option-subtitle" style="font-style:normal; color: var(--ink);">Como decifrar e transformar os padrões invisíveis da sua organização</div>
+        </div>
+        <div class="title-option" onclick="selectQ3('B')" id="q3-b">
+          <div class="option-letter">B</div>
+          <div class="option-subtitle" style="font-style:normal; color: var(--ink);">O que sua organização preserva sem saber — e como mudar isso</div>
+        </div>
+        <div class="title-option" onclick="selectQ3('C')" id="q3-c">
+          <div class="option-letter">C</div>
+          <div class="option-subtitle" style="font-style:normal; color: var(--ink);">Ver o que ninguém questiona é o primeiro passo para transformar</div>
+        </div>
+        <div class="title-option" onclick="selectQ3('D')" id="q3-d">
+          <div class="option-letter">D</div>
+          <div class="option-subtitle" style="font-style:normal; color: var(--ink);">Os símbolos que governam sua cultura e as ferramentas para transformá-la</div>
+        </div>
+      </div>
+
+      <textarea id="q3text" placeholder="O que você esperaria encontrar dentro desse livro?"></textarea>
+    </div>
+    <div class="nav">
+      <button class="btn btn-secondary" onclick="goTo(2)">← Voltar</button>
+      <div class="step-indicator">3 de 4</div>
+      <button class="btn btn-primary" onclick="goTo(4)">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="question-card">
+      <div class="question-number">Pergunta 04 — 04 <span class="optional-badge">opcional</span></div>
+      <div class="question-text">Algum dos títulos te afastaria do livro?</div>
+      <div class="question-sub">Se sim, qual — e por quê? Pode ser sincero, essa é a pergunta mais importante.</div>
+      <textarea id="q4" placeholder="Escreva aqui se quiser — sua resposta vai me ajudar muito..."></textarea>
+    </div>
+    <div class="nav">
+      <button class="btn btn-secondary" onclick="goTo(3)">← Voltar</button>
+      <div class="step-indicator">4 de 4</div>
+      <button class="btn btn-primary" onclick="submit()">Enviar respostas ✓</button>
+    </div>
+  </div>
+
+  <!-- THANK YOU -->
+  <div class="step" id="stepThanks">
+    <div class="thankyou">
+      <div class="thankyou-icon">✦</div>
+      <h2>Muito obrigado.</h2>
+      <p>Sua opinião vai fazer diferença na escolha do título. Quando o livro sair, você será um dos primeiros a saber.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let q3selected = null;
+  const totalSteps = 4;
+
+  function updateProgress(step) {
+    const pct = ((step - 1) / totalSteps) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function goTo(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('step' + n);
+    if (target) {
+      target.classList.add('active');
+      updateProgress(n);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function selectQ3(letter) {
+    q3selected = letter;
+    ['A','B','C','D'].forEach(l => {
+      document.getElementById('q3-' + l.toLowerCase()).classList.remove('selected');
+    });
+    document.getElementById('q3-' + letter.toLowerCase()).classList.add('selected');
+  }
+
+ function submit() {
+
+  const payload = {
+    q1: document.getElementById('q1').value,
+    q2a: document.getElementById('q2a').value,
+    q2b: document.getElementById('q2b').value,
+    q2c: document.getElementById('q2c').value,
+    q2d: document.getElementById('q2d').value,
+    q3choice: q3selected,
+    q3text: document.getElementById('q3text').value,
+    q4: document.getElementById('q4').value
+  };
+
+fetch("https://script.google.com/macros/s/AKfycbxbhdY9weh6sDWGkbBkNgfAEzmQ8DJvmjnJM9j4Qsxr_zds9dn-Ac1Xpi1OhqjHpzfCBg/exec", {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(() => {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('stepThanks').classList.add('active');
+    document.getElementById('progressFill').style.width = '100%';
+  })
+  .catch(err => {
+    alert("Erro ao enviar. Tente novamente.");
+    console.error(err);
+  });
+
+  }
+</script>
+
+</body>
+</html>
